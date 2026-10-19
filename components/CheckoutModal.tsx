@@ -20,8 +20,8 @@ export function CheckoutModal({ tier, onClose }: { tier: Tier | null; onClose: (
 
     const cleanEmail = email.trim();
     const cleanKey = existingKey.trim();
-    if (!isValidEmail(cleanEmail)) return setError("Enter a valid email address.");
-    if (cleanKey && !looksLikeApiKey(cleanKey)) return setError("API keys start with sk- followed by letters and numbers.");
+    if (!isValidEmail(cleanEmail)) return setError(t.pricing.invalidEmail);
+    if (cleanKey && !looksLikeApiKey(cleanKey)) return setError(t.pricing.invalidKey);
 
     setLoading(true);
     try {
@@ -31,7 +31,7 @@ export function CheckoutModal({ tier, onClose }: { tier: Tier | null; onClose: (
         body: JSON.stringify({ tierAmount: tier.amountUsd, email: cleanEmail, existingKey: cleanKey }),
       });
       const data = (await res.json()) as { url?: string; error?: string };
-      if (!res.ok || !data.url) throw new Error(data.error ?? "Unable to start checkout.");
+      if (!res.ok || !data.url) throw new Error(data.error ?? t.pricing.checkoutFailed);
       window.location.assign(data.url);
     } catch (err) {
       setError((err as Error).message);
@@ -47,12 +47,13 @@ export function CheckoutModal({ tier, onClose }: { tier: Tier | null; onClose: (
       onClose={() => {
         if (!loading) onClose();
       }}
-      title={tier ? `${tier.name} — $${tier.amountUsd}` : "Checkout"}
-      description={tier ? `You get $${credit.toFixed(2)} of usable credit across every model.` : undefined}
+      title={tier ? `${tier.name} · $${tier.amountUsd}` : t.pricing.buyNow}
+      description={tier ? `$${credit.toFixed(2)} ${t.pricing.creditDescription}` : undefined}
+      closeLabel={t.common.close}
     >
       <form onSubmit={submit} noValidate className="space-y-4">
         <div>
-          <label htmlFor="checkout-email" className="mb-1.5 block text-sm font-medium text-zinc-300">
+          <label htmlFor="checkout-email" className="mb-1.5 block text-sm font-medium text-ink-body">
             {t.pricing.enterEmail}
           </label>
           <input
@@ -60,16 +61,17 @@ export function CheckoutModal({ tier, onClose }: { tier: Tier | null; onClose: (
             type="email"
             autoComplete="email"
             required
+            aria-describedby="checkout-email-hint"
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             placeholder="you@company.com"
-            className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
+            className="input-brand"
           />
-          <p className="mt-1 text-xs text-zinc-500">Your key and receipt are sent here.</p>
+          <p id="checkout-email-hint" className="mt-1 text-xs text-ink-muted">{t.pricing.emailHint}</p>
         </div>
 
         <div>
-          <label htmlFor="checkout-key" className="mb-1.5 block text-sm font-medium text-zinc-300">
+          <label htmlFor="checkout-key" className="mb-1.5 block text-sm font-medium text-ink-body">
             {t.pricing.enterKeyOptional}
           </label>
           <input
@@ -77,29 +79,26 @@ export function CheckoutModal({ tier, onClose }: { tier: Tier | null; onClose: (
             type="password"
             autoComplete="off"
             spellCheck={false}
+            aria-describedby="checkout-key-hint"
             value={existingKey}
             onChange={(e) => setExistingKey(e.target.value)}
             placeholder="sk-..."
-            className="w-full rounded-lg border border-white/10 bg-black/40 px-3 py-2 font-mono text-sm text-white placeholder:text-zinc-600 focus:border-violet-500 focus:outline-none focus:ring-1 focus:ring-violet-500"
+            className="input-brand font-mono"
           />
-          <p className="mt-1 text-xs text-zinc-500">Leave blank to receive a brand-new key.</p>
+          <p id="checkout-key-hint" className="mt-1 text-xs text-ink-muted">{t.pricing.keyHint}</p>
         </div>
 
         {error && (
-          <p role="alert" className="rounded-lg border border-red-500/30 bg-red-500/10 px-3 py-2 text-sm text-red-300">
+          <p role="alert" className="rounded-lg border border-brand-orange/50 bg-brand-orange/10 px-3 py-2 text-sm text-ink-body">
             {error}
           </p>
         )}
 
-        <button
-          type="submit"
-          disabled={loading}
-          className="flex w-full items-center justify-center gap-2 rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-black transition hover:bg-zinc-200 disabled:cursor-not-allowed disabled:opacity-60 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
-        >
+        <button type="submit" disabled={loading} className="btn-primary focus-brand w-full">
           {loading ? <LoaderCircle className="h-4 w-4 animate-spin" aria-hidden /> : <Lock className="h-4 w-4" aria-hidden />}
-          {loading ? "Redirecting to Stripe…" : `Pay $${tier?.amountUsd ?? 0} with Stripe`}
+          {loading ? t.pricing.redirecting : `${t.pricing.pay} · $${tier?.amountUsd ?? 0}`}
         </button>
-        <p className="text-center text-xs text-zinc-500">Secure checkout by Stripe. Keys are delivered instantly.</p>
+        <p className="text-center text-xs text-ink-muted">{t.pricing.secure}</p>
       </form>
     </Modal>
   );

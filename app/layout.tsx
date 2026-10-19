@@ -3,13 +3,13 @@ import "./globals.css";
 import { LanguageProvider } from "@/context/LanguageContext";
 
 export const metadata: Metadata = {
-  title: "TokenGate — Prepaid LLM API Keys",
+  title: "METTO & MIDALO — Prepaid LLM API Keys",
   description:
     "Claude 3.5 Sonnet, GPT-4o, DeepSeek-V3, Kimi and GLM behind one OpenAI-compatible endpoint. Pay once, get your key instantly.",
 };
 
 export const viewport: Viewport = {
-  themeColor: "#08090a",
+  themeColor: "#0C1727",
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {

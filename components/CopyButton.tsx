@@ -36,9 +36,9 @@ export function CopyButton({
       type="button"
       onClick={copy}
       aria-label={copied ? copiedLabel : label}
-      className={`inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-medium text-zinc-300 transition hover:bg-white/10 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 ${className}`}
+      className={`focus-brand inline-flex items-center gap-1.5 rounded-md border border-navy-border bg-navy px-2.5 py-1.5 text-xs font-medium text-ink-body transition hover:border-brand-cyan hover:text-ink-title ${className}`}
     >
-      {copied ? <Check className="h-3.5 w-3.5 text-emerald-400" aria-hidden /> : <Copy className="h-3.5 w-3.5" aria-hidden />}
+      {copied ? <Check className="h-3.5 w-3.5 text-brand-mint" aria-hidden /> : <Copy className="h-3.5 w-3.5" aria-hidden />}
       <span>{copied ? copiedLabel : label}</span>
       <span className="sr-only" aria-live="polite">
         {copied ? "Copied to clipboard" : ""}

@@ -30,6 +30,8 @@ function mask(key: string) {
 }
 
 export function SuccessView() {
+  const { t } = useTranslation();
+  const s = t.success;
   const sessionId = useSearchParams().get("session_id") ?? "";
   const [order, setOrder] = useState<OrderStatus | null>(null);
   const [timedOut, setTimedOut] = useState(false);
@@ -74,22 +76,20 @@ export function SuccessView() {
 
   if (!order || order.status === "processing" || order.status === "awaiting_payment") {
     return (
-      <div role="status" className="rounded-xl border border-white/10 bg-white/[0.02] p-8 text-center">
+      <div role="status" className="rounded-xl border border-navy-border bg-navy-card p-8 text-center">
         {timedOut ? (
           <>
-            <Mail className="mx-auto h-8 w-8 text-violet-400" aria-hidden />
-            <h1 className="mt-4 text-xl font-semibold text-white">Still finishing up</h1>
-            <p className="mt-2 text-sm text-zinc-400">
-              Your payment went through. Your key will be emailed as soon as it is ready. You can also refresh this page.
-            </p>
+            <Mail className="mx-auto h-8 w-8 text-brand-cyan" aria-hidden />
+            <h1 className="mt-4 text-xl font-semibold text-ink-title">{s.stillFinishing}</h1>
+            <p className="mt-2 text-sm text-ink-muted">{s.stillFinishingBody}</p>
           </>
         ) : (
           <>
-            <LoaderCircle className="mx-auto h-8 w-8 animate-spin text-violet-400" aria-hidden />
-            <h1 className="mt-4 text-xl font-semibold text-white">
-              {order?.status === "awaiting_payment" ? "Waiting for payment confirmation…" : "Provisioning your API key…"}
+            <LoaderCircle className="mx-auto h-8 w-8 animate-spin text-brand-cyan" aria-hidden />
+            <h1 className="mt-4 text-xl font-semibold text-ink-title">
+              {order?.status === "awaiting_payment" ? s.awaitingPayment : s.provisioning}
             </h1>
-            <p className="mt-2 text-sm text-zinc-400">This usually takes a few seconds. Keep this page open.</p>
+            <p className="mt-2 text-sm text-ink-muted">{s.keepOpen}</p>
           </>
         )}
       </div>
@@ -98,14 +98,12 @@ export function SuccessView() {
 
   if (order.status !== "fulfilled") {
     return (
-      <div role="alert" className="rounded-xl border border-red-500/30 bg-red-500/10 p-8 text-center">
-        <CircleAlert className="mx-auto h-8 w-8 text-red-400" aria-hidden />
-        <h1 className="mt-4 text-xl font-semibold text-white">We couldn&apos;t find that order</h1>
-        <p className="mt-2 text-sm text-zinc-300">
-          {order.status === "expired" ? "This checkout session expired before payment." : "The link may be invalid or incomplete."}
-        </p>
-        <a href="/" className="mt-6 inline-block text-sm font-medium text-violet-300 hover:text-violet-200">
-          Back to storefront
+      <div role="alert" className="rounded-xl border border-brand-orange/50 bg-brand-orange/10 p-8 text-center">
+        <CircleAlert className="mx-auto h-8 w-8 text-brand-orange" aria-hidden />
+        <h1 className="mt-4 text-xl font-semibold text-ink-title">{s.notFound}</h1>
+        <p className="mt-2 text-sm text-ink-body">{order.status === "expired" ? s.expired : s.invalidLink}</p>
+        <a href="/" className="focus-brand mt-6 inline-block rounded text-sm font-medium text-brand-cyan hover:underline">
+          {s.back}
         </a>
       </div>
     );
@@ -116,55 +114,54 @@ export function SuccessView() {
 
 function KeyReveal({ order }: { order: FulfilledOrder }) {
   const { t } = useTranslation();
+  const s = t.success;
   const [revealed, setRevealed] = useState(false);
 
   return (
     <div className="space-y-8">
       <div>
-        <CircleCheck className="h-8 w-8 text-emerald-400" aria-hidden />
-        <h1 className="mt-4 text-2xl font-semibold text-white">
-          {order.isTopup ? t.success.topupTitle : t.success.title}
-        </h1>
-        <p className="mt-2 text-sm text-zinc-400">
-          ${order.amountUsd.toFixed(2)} paid · ${order.creditUsd.toFixed(2)} credit added. A copy was sent to{" "}
-          <span className="text-zinc-200">{order.email}</span>.
+        <CircleCheck className="h-8 w-8 text-brand-mint" aria-hidden />
+        <h1 className="mt-4 text-2xl font-semibold text-ink-title">{order.isTopup ? s.topupTitle : s.title}</h1>
+        <p className="mt-2 text-sm text-ink-muted">
+          ${order.amountUsd.toFixed(2)} {s.paid} · ${order.creditUsd.toFixed(2)} {s.creditAdded}{" "}
+          <span className="text-ink-body">{order.email}</span>.
         </p>
       </div>
 
-      <section aria-labelledby="key-heading" className="rounded-xl border border-white/10 bg-[#0e0f11] p-5">
-        <h2 id="key-heading" className="text-sm font-medium text-zinc-300">API key</h2>
+      <section aria-labelledby="key-heading" className="rounded-xl border border-navy-border bg-navy-card p-5">
+        <h2 id="key-heading" className="text-sm font-medium text-ink-body">{s.apiKey}</h2>
         <div className="mt-3 flex flex-wrap items-center gap-2">
-          <code className="flex-1 break-all rounded-md bg-black/40 px-3 py-2 font-mono text-sm text-white">
+          <code className="flex-1 break-all rounded-md bg-navy px-3 py-2 font-mono text-sm text-ink-title">
             {revealed ? order.keySecret : mask(order.keySecret)}
           </code>
           <button
             type="button"
             onClick={() => setRevealed((r) => !r)}
             aria-pressed={revealed}
-            aria-label={revealed ? "Hide API key" : "Reveal API key"}
-            className="inline-flex items-center gap-1.5 rounded-md border border-white/10 bg-white/5 px-2.5 py-1.5 text-xs font-medium text-zinc-300 hover:bg-white/10 hover:text-white focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
+            aria-label={`${revealed ? s.hide : s.reveal}: ${s.apiKey}`}
+            className="focus-brand inline-flex items-center gap-1.5 rounded-md border border-navy-border bg-navy px-2.5 py-1.5 text-xs font-medium text-ink-body hover:border-brand-cyan hover:text-ink-title"
           >
             {revealed ? <EyeOff className="h-3.5 w-3.5" aria-hidden /> : <Eye className="h-3.5 w-3.5" aria-hidden />}
-            {revealed ? "Hide" : "Reveal"}
+            {revealed ? s.hide : s.reveal}
           </button>
-          <CopyButton value={order.keySecret} label={t.success.copyKey} copiedLabel={t.success.copied} />
+          <CopyButton value={order.keySecret} label={s.copyKey} copiedLabel={s.copied} />
         </div>
 
-        <h2 className="mt-5 text-sm font-medium text-zinc-300">Base URL</h2>
+        <h2 className="mt-5 text-sm font-medium text-ink-body">{s.baseUrl}</h2>
         <div className="mt-3 flex items-center gap-2">
-          <code className="flex-1 break-all rounded-md bg-black/40 px-3 py-2 font-mono text-sm text-white">{GATEWAY_BASE_URL}</code>
-          <CopyButton value={GATEWAY_BASE_URL} />
+          <code className="flex-1 break-all rounded-md bg-navy px-3 py-2 font-mono text-sm text-ink-title">{GATEWAY_BASE_URL}</code>
+          <CopyButton value={GATEWAY_BASE_URL} label={t.common.copy} copiedLabel={s.copied} />
         </div>
-        <p className="mt-4 text-xs text-amber-300/80">Store this key somewhere safe. Treat it like a password.</p>
+        <p className="mt-4 text-xs text-brand-orange">{s.storeSafely}</p>
       </section>
 
       <section aria-labelledby="quickstart-heading">
-        <h2 id="quickstart-heading" className="mb-3 text-sm font-medium text-zinc-300">Quickstart</h2>
+        <h2 id="quickstart-heading" className="mb-3 text-sm font-medium text-ink-body">{s.quickstart}</h2>
         <CodeSwitcher baseUrl={GATEWAY_BASE_URL} apiKey={order.keySecret} />
       </section>
 
-      <a href="/" className="inline-block text-sm font-medium text-violet-300 hover:text-violet-200">
-        ← Back to storefront
+      <a href="/" className="focus-brand inline-block rounded text-sm font-medium text-brand-cyan hover:underline">
+        ← {s.back}
       </a>
     </div>
   );

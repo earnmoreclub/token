@@ -1,23 +1,49 @@
 "use client";
 
 import { useTranslation } from "@/context/LanguageContext";
+import { LOCALES, LOCALE_LABELS, type Locale } from "@/locales/dictionaries";
 
+/** Accessible names announced in each target language. */
+const SWITCH_LABELS: Record<Locale, string> = {
+  en: "Switch to English",
+  "zh-TW": "切換至繁體中文",
+  es: "Cambiar a español",
+};
+
+/** Segmented EN | 繁中 | ES switcher. Choice is persisted by LanguageProvider. */
 export default function LanguageToggle() {
   const { locale, setLocale } = useTranslation();
-  const next = locale === "en" ? "zh-TW" : "en";
 
   return (
-    <button
-      type="button"
-      onClick={() => setLocale(next)}
-      className="flex items-center gap-1.5 rounded-full border border-white/10 bg-white/5 px-3 py-1.5 text-xs font-medium text-zinc-300 transition-colors hover:border-violet-500 focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500"
-      aria-label={next === "en" ? "Switch to English" : "切換至繁體中文"}
+    <div
+      role="group"
+      aria-label="Language"
+      className="flex items-center rounded-full border border-navy-border bg-navy-card p-0.5 text-xs font-medium"
     >
-      <span className={locale === "en" ? "font-bold text-violet-300" : "text-zinc-500"}>EN</span>
-      <span className="text-zinc-600" aria-hidden>
-        |
-      </span>
-      <span className={locale === "zh-TW" ? "font-bold text-emerald-300" : "text-zinc-500"}>繁中</span>
-    </button>
+      {LOCALES.map((l, i) => {
+        const active = l === locale;
+        return (
+          <span key={l} className="flex items-center">
+            {i > 0 && (
+              <span className="px-0.5 text-navy-border" aria-hidden>
+                |
+              </span>
+            )}
+            <button
+              type="button"
+              lang={l}
+              onClick={() => setLocale(l)}
+              aria-pressed={active}
+              aria-label={SWITCH_LABELS[l]}
+              className={`focus-brand rounded-full px-2.5 py-1 transition-colors ${
+                active ? "bg-brand-blue font-bold text-white" : "text-ink-muted hover:text-brand-cyan"
+              }`}
+            >
+              {LOCALE_LABELS[l]}
+            </button>
+          </span>
+        );
+      })}
+    </div>
   );
 }

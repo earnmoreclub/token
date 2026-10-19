@@ -45,8 +45,8 @@ export function CodeSwitcher({ baseUrl, apiKey }: { baseUrl: string; apiKey?: st
   const snippets = buildSnippets(baseUrl, apiKey);
 
   return (
-    <div className="overflow-hidden rounded-xl border border-white/10 bg-[#0e0f11] shadow-2xl shadow-violet-950/30">
-      <div className="flex items-center justify-between border-b border-white/10 px-3 py-2">
+    <div className="overflow-hidden rounded-xl border border-navy-border bg-navy-card shadow-2xl shadow-brand-blue/10">
+      <div className="flex items-center justify-between border-b border-navy-border px-3 py-2">
         <div role="tablist" aria-label="Code language" className="flex gap-1">
           {(Object.keys(LABELS) as Lang[]).map((l) => (
             <button
@@ -57,8 +57,8 @@ export function CodeSwitcher({ baseUrl, apiKey }: { baseUrl: string; apiKey?: st
               aria-selected={lang === l}
               aria-controls="code-panel"
               onClick={() => setLang(l)}
-              className={`rounded-md px-3 py-1 text-xs font-medium transition focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-500 ${
-                lang === l ? "bg-white/10 text-white" : "text-zinc-400 hover:text-zinc-200"
+              className={`focus-brand rounded-md px-3 py-1 text-xs font-medium transition ${
+                lang === l ? "bg-brand-blue text-white" : "text-ink-muted hover:text-brand-cyan"
               }`}
             >
               {LABELS[l]}
@@ -72,7 +72,7 @@ export function CodeSwitcher({ baseUrl, apiKey }: { baseUrl: string; apiKey?: st
         role="tabpanel"
         aria-labelledby={`tab-${lang}`}
         tabIndex={0}
-        className="overflow-x-auto p-4 font-mono text-[13px] leading-relaxed text-zinc-300"
+        className="focus-brand overflow-x-auto p-4 font-mono text-[13px] leading-relaxed text-ink-body"
       >
         <code>{snippets[lang]}</code>
       </pre>
