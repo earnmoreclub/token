@@ -1,0 +1,31 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+:root {
+  color-scheme: dark;
+}
+
+body {
+  @apply bg-navy text-ink-body antialiased;
+}
+
+::selection {
+  @apply bg-brand-blue/50 text-white;
+}
+
+@layer components {
+  /* Shared form input styling (brand focus ring). */
+  .input-brand {
+    @apply w-full rounded-lg border border-navy-border bg-navy px-3 py-2 text-sm text-white placeholder:text-ink-muted/60 focus:border-brand-cyan focus:outline-none focus:ring-1 focus:ring-brand-cyan;
+  }
+  .focus-brand {
+    @apply focus:outline-none focus-visible:ring-2 focus-visible:ring-brand-cyan focus-visible:ring-offset-2 focus-visible:ring-offset-navy;
+  }
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg bg-brand-blue px-4 py-2.5 text-sm font-semibold text-white transition hover:bg-gradient-to-r hover:from-brand-blue hover:to-brand-cyan disabled:cursor-not-allowed disabled:opacity-60;
+  }
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-2 rounded-lg border border-navy-border bg-navy-card px-4 py-2.5 text-sm font-semibold text-white transition hover:border-brand-cyan disabled:cursor-not-allowed disabled:opacity-60;
+  }
+}
